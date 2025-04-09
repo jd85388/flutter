@@ -1,15 +1,20 @@
 import jwt from 'jsonwebtoken';
 import {Request, Response, NextFunction} from 'express';
+import { config } from '../config/config';
 
-const codificado = process.env.jwt_codificado;
+const codificado = config.jwt_codificado;
 
 export const verificarToken = (
     req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers['authorization'];
+    const autorizacion = req.headers['authorization'];
 
-    if (!token) return res.status(403).json({
-        message:"Token no encontrado"
+    if (!autorizacion) return res.status(403).json({
+        message:"no se encontro el token, intenta otra vez"
     });
+
+    const token = autorizacion.startsWith('Bearer ')
+    ? autorizacion.slice(7).trim()
+    : autorizacion;
 
     try {
 

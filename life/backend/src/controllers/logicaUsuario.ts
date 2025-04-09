@@ -2,9 +2,9 @@ import Usuario from '../models/Usuario';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {Request, Response} from 'express';
-import { error } from 'console';
+import { config } from '../config/config';
 
-const codificado = process.env.jwt_codificado;
+const codificado = config.jwt_codificado;
 
 export const registre = async (req: Request, res: Response) => {
     const {name, surname, telephone, email, age, password} = req.body;
@@ -70,15 +70,18 @@ export  const login = async (req: Request, res: Response) => {
 
         const token = jwt.sign({
             id: pepe._id
-        },codificado!);
+        },codificado);
 
 
         res.json({
             token
         });
     } catch (e) {
+        console.error("Error en login:", e); // Esto imprimirá en consola el error real
         res.status(500).json({
-            message:"Perdimos la conexion con el servidor", error: e
+            message: "Perdimos la conexion con el servidor",
+            error: e instanceof Error ? e.message : e
         });
     }
-};
+    
+    }
