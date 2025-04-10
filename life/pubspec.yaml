@@ -10,8 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.6  # <-- versión correcta
+  http: ^1.3.0  # <-- versión correcta
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
