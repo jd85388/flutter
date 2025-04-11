@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'vista/Login.dart';
-import 'vista/Registro.dart';
-import 'vista/Recuperar.dart';
+import 'view/Login.dart';
+import 'view/Registro.dart';
+import 'view/Recuperar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistroPage(),
-        '/Recuperar' :(context) => const RecuperarPage(), // <-- Añadido
+        '/Recuperar': (context) => const RecuperarPage(), // <-- Añadido
       },
     );
   }
