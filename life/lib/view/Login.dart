@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
       _cargando = true;
     });
 
-    final url = Uri.parse('http://192.168.1.10:3000/auth/inicio');
+    final url = Uri.parse('http://192.168.1.10:3000/api/inicio');
     final respuesta = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

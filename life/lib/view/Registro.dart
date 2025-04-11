@@ -11,23 +11,33 @@ class RegistroPage extends StatefulWidget {
 
 class _RegistroPageState extends State<RegistroPage> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool isLoading = false;
 
   Future<void> registrarUsuario() async {
-    final nombre = nameController.text.trim();
-    final correo = emailController.text.trim();
-    final telefono = phoneController.text.trim();
-    final genero = genderController.text.trim();
+    final name = nameController.text.trim();
+    final surname = surnameController.text.trim();
+    final email = emailController.text.trim();
+    final telephone = phoneController.text.trim();
+    final age = ageController.text.trim();
     final password = passwordController.text.trim();
 
-    if ([nombre, correo, telefono, genero, password].any((e) => e.isEmpty)) {
+    if ([name, surname, telephone, email, age, password]
+        .any((e) => e.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
+      );
+      return;
+    }
+
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('correo no valido')),
       );
       return;
     }
@@ -37,15 +47,16 @@ class _RegistroPageState extends State<RegistroPage> {
     });
 
     try {
-      final url = Uri.parse('http://192.168.232.242:3000/auth/registro');
+      final url = Uri.parse('http://192.168.1.10:3000/api/registro');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'nombre': nombre,
-          'correo': correo,
-          'telefono': int.parse(telefono),
-          'genero': genero,
+          'name': name,
+          'surname': surname,
+          'email': email,
+          'telephone': telephone,
+          'age': int.tryParse(age),
           'password': password,
         }),
       );
@@ -114,13 +125,15 @@ class _RegistroPageState extends State<RegistroPage> {
             // Campos
             _buildTextField(nameController, 'Nombres', Icons.person),
             const SizedBox(height: 12),
+            _buildTextField(surnameController, 'apellidos', Icons.person),
+            const SizedBox(height: 12),
             _buildTextField(emailController, 'Correo electrónico', Icons.email,
                 keyboardType: TextInputType.emailAddress),
             const SizedBox(height: 12),
             _buildTextField(phoneController, 'Número de teléfono', Icons.phone,
                 keyboardType: TextInputType.phone),
             const SizedBox(height: 12),
-            _buildTextField(genderController, 'Género', Icons.person_outline),
+            _buildTextField(ageController, 'edad', Icons.person_outline),
             const SizedBox(height: 12),
             _buildTextField(passwordController, 'Contraseña', Icons.lock,
                 obscureText: true),

@@ -4,7 +4,7 @@ import '../models/usuario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class apiUsuario {
-  final String baseUrl = "http://192.168.1.10:3000/api/usuarios";
+  final String baseUrl = "http://192.168.1.10:3000/api";
 
   Future<bool> registrarUsuario(Usuario usuario) async {
     final url = Uri.parse('$baseUrl/registro');
@@ -37,7 +37,7 @@ class apiUsuario {
       final token = jsonData['token'];
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('toekn', token);
+      await prefs.setString('token', token);
 
       return token;
     } else {
