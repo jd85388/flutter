@@ -18,9 +18,7 @@ export const registre = async (req: Request, res: Response) => {
     }
 
     try{
-        const existe = await Usuario.findOne({
-             $or: [{email},{telephone}]
-            });
+        const existe = await Usuario.findOne({email});
         if (existe) return res.status(400).json({
             message: "Usuario registrado"
         });
@@ -56,16 +54,14 @@ export  const login = async (req: Request, res: Response) => {
     const {email, telephone, password} = req.body;
 
     try {
-        const pepe = await Usuario.findOne({
-            $or: [{email},{telephone}]
-        });
+        const pepe = await Usuario.findOne({email});
         if(!pepe) return res.status(404).json({
-            menssage:"El usuario no esta registrado"
+            message:"El usuario no esta registrado"
         });
 
         const equivocado = await bcrypt.compare(password, pepe.password);
         if (!equivocado) return res.status(401).json({
-            menssage:" Contraseña incorrecta, vuelve a intentar"
+            message:" Contraseña incorrecta, vuelve a intentar"
         });
 
         const token = jwt.sign({
