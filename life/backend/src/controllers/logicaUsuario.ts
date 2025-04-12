@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {Request, Response} from 'express';
 import { config } from '../config/config';
+import { enviarCorreo  } from '../services/email';
 
 const codificado = config.jwt_codificado;
 
@@ -34,24 +35,32 @@ export const registre = async (req: Request, res: Response) => {
         });
         await newUsuario.save();
 
+
+        await enviarCorreo(
+            email,
+             "Bienvenido a Life Reminder",
+            `<h2>hola ${name},</h2><p>Es un placer que hayas decidido unirte a nosotros. 
+   Puedes contactarnos a través de este correo para cualquier duda que tengas.</p>`
+         );
+
         res.status(201).json({
-            message:"Felicidades te has registrado"
+            message:"Felicidades te has registrado, te hemos enviado un mensaje a tu correo"
         });
     } catch (error){
          if ((error as any).code === 11000) {
             return res.status(400).json({
-               message:"El correo o telefono ya se encuntran registrados"
+               message:"El correo o telefono ya se encuentran registrados"
            });
         }
 
         return res.status(500).json({
-            message:"Error en el servidos", error
+            message:"Error en el servidor", error
         });
     }
 };
 
 export  const login = async (req: Request, res: Response) => {
-    const {email, telephone, password} = req.body;
+    const {email, password} = req.body;
 
     try {
         const pepe = await Usuario.findOne({email});
