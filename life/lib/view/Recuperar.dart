@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'Registro.dart';
 import 'RecuperarInfo.dart';
 
-class RecuperarPage extends StatelessWidget {
+class RecuperarPage extends StatefulWidget {
   const RecuperarPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+  State<RecuperarPage> createState() => _RecuperarPageState();
+}
 
+class _RecuperarPageState extends State<RecuperarPage> {
+  final TextEditingController emailController = TextEditingController();
+  bool _cargando = false;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -52,7 +61,7 @@ class RecuperarPage extends StatelessWidget {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[100],
-                  labelText: 'Correo electrónico o número de teléfono',
+                  labelText: 'Correo electrónico ',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide: BorderSide.none,
@@ -69,20 +78,68 @@ class RecuperarPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Enlace de recuperación enviado")),
-                  );
-                },
-                child: const Text(
-                  'Enviar enlace de recuperación',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                onPressed: _cargando
+                    ? null
+                    : () async {
+                        final email = emailController.text.trim();
+
+                        if (email.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Por favor ingresa un correo")),
+                          );
+                          return;
+                        }
+
+                        final url = Uri.parse(
+                            'http://192.168.1.10:3000/api/recuperacion');
+
+                        setState(() {
+                          _cargando = true;
+                        });
+
+                        try {
+                          final response = await http.post(
+                            url,
+                            headers: {'Content-Type': 'application/json'},
+                            body: jsonEncode({'correo': email}),
+                          );
+
+                          final data = jsonDecode(response.body);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                data['message'] ??
+                                    (response.statusCode == 200
+                                        ? 'Correo enviado'
+                                        : 'No pudimos enviar el correo'),
+                              ),
+                            ),
+                          );
+                        } catch (err) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text("Error al conectar con el servidor")),
+                          );
+                        } finally {
+                          setState(() {
+                            _cargando = false;
+                          });
+                        }
+                      },
+                child: _cargando
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Text(
+                        'Enviar enlace',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
               ),
               const SizedBox(height: 20),
-
-              // Enlace interactivo "¿No puedes cambiar la contraseña?"
               Center(
                 child: TextButton(
                   onPressed: () {
@@ -102,7 +159,6 @@ class RecuperarPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
               Row(children: const <Widget>[
                 Expanded(child: Divider(thickness: 1)),
@@ -113,8 +169,6 @@ class RecuperarPage extends StatelessWidget {
                 Expanded(child: Divider(thickness: 1)),
               ]),
               const SizedBox(height: 20),
-
-              // Botón Google
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00B4D8),
@@ -131,8 +185,6 @@ class RecuperarPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 10),
-
-              // Botón Facebook
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4267B2),
@@ -149,8 +201,6 @@ class RecuperarPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-
-              // Enlace "¿No tienes una cuenta? Regístrate aquí"
               Center(
                 child: TextButton(
                   onPressed: () {

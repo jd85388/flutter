@@ -2,6 +2,10 @@ import express from 'express';
 import {Request, Response, NextFunction} from 'express';
 import { verificarToken } from '../middlewares/seguridad';
 import { registre, login } from '../controllers/logicaUsuario';
+import dotenv from 'dotenv';
+import { recuperacionCuenta, cambiarPassword } from '../controllers/logicaRecuperacion';
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -11,6 +15,8 @@ const manejarAsync = (fn: any) => {
     };
 };
 
+router.post('/cambioContraseña', manejarAsync(cambiarPassword));
+router.post('/recuperacion', manejarAsync(recuperacionCuenta));
 router.post('/registro', manejarAsync(registre));
 router.post('/inicio', manejarAsync(login));
 
