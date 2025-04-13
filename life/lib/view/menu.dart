@@ -260,7 +260,8 @@ class menuPage extends StatelessWidget {
 
               try {
                 final response = await http.put(
-                  Uri.parse('http://192.168.1.10:3000/api/CambioRoles'),
+                  Uri.parse(
+                      'https://flutter-gaso.onrender.com/api/CambioRoles'),
                   headers: {'Content-Type': 'application/json'},
                   body: jsonEncode({'codigoSecreto': codigoSecreto}),
                 );

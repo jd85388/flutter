@@ -47,7 +47,7 @@ class _RegistroPageState extends State<RegistroPage> {
     });
 
     try {
-      final url = Uri.parse('http://192.168.1.10:3000/api/registro');
+      final url = Uri.parse('https://flutter-gaso.onrender.com/api/registro');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

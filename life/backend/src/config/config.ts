@@ -10,7 +10,7 @@ export const config = {
     email_port: process.env.EMAIL_PORT || '587',
     email_user: process.env.EMAIL_USER || '',
     email_pass: process.env.EMAIL_PASS || '',
-    backend_host: process.env.BACKEND_HOST || 'http://localhost:3000',
+    backend_host: process.env.BACKEND_HOST || 'https://flutter-gaso.onrender.com',
     CODIGOROL: process.env.CODIGOROL || "ClaveSecretaParaCambiarRol",
     fronted_recuperacion: process.env.FRONTEND_RECUPERACION || "http://localhost:5173",
 };

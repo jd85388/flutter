@@ -22,7 +22,7 @@ void cambiarRolAPremium(BuildContext context) async {
     final userId = decodedToken['userId'];
 
     final response = await http.put(
-      Uri.parse('http://192.168.1.10:3000/api/CambioRol'),
+      Uri.parse('https://flutter-gaso.onrender.com/api/CambioRol'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

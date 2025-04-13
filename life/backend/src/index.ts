@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use('/api', router);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 mongoose.connect(process.env.CONEXION!)
 .then(() => {

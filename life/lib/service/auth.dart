@@ -4,7 +4,7 @@ import '../models/usuario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class apiUsuario {
-  final String baseUrl = "http://192.168.1.10:3000/api";
+  final String baseUrl = "https://flutter-gaso.onrender.com/api";
 
   Future<bool> registrarUsuario(Usuario usuario) async {
     final url = Uri.parse('$baseUrl/registro');

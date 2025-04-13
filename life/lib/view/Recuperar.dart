@@ -92,7 +92,7 @@ class _RecuperarPageState extends State<RecuperarPage> {
                         }
 
                         final url = Uri.parse(
-                            'http://192.168.1.10:3000/api/recuperacion');
+                            'https://flutter-gaso.onrender.com/api/recuperacion');
 
                         setState(() {
                           _cargando = true;
