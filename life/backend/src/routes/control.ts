@@ -4,6 +4,7 @@ import { verificarToken } from '../middlewares/seguridad';
 import { registre, login } from '../controllers/logicaUsuario';
 import dotenv from 'dotenv';
 import { recuperacionCuenta, cambiarPassword } from '../controllers/logicaRecuperacion';
+import { cambioRoles } from '../controllers/cambioRoles';
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ const manejarAsync = (fn: any) => {
         Promise.resolve(fn(req, res, next)).catch(next);
     };
 };
-
+router.post('/cambioRoles', verificarToken, manejarAsync(cambioRoles));
 router.post('/cambioContraseña', manejarAsync(cambiarPassword));
 router.post('/recuperacion', manejarAsync(recuperacionCuenta));
 router.post('/registro', manejarAsync(registre));

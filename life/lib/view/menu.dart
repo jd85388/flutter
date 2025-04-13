@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:life/view/configuracion.dart';
 import 'package:life/view/formulario_cita.dart';
 import 'package:life/view/formulario_medicamento.dart';
@@ -6,6 +8,7 @@ import 'package:life/view/formulario_tratamiento.dart';
 import 'package:life/view/lista_citas_screen.dart';
 import 'package:life/view/lista_medicamentos_screen.dart';
 import 'package:life/view/lista_tratamientos_screen.dart';
+import 'package:life/service/jwtShared.dart';
 
 class menuPage extends StatelessWidget {
   const menuPage({Key? key}) : super(key: key);
@@ -25,6 +28,29 @@ class menuPage extends StatelessWidget {
         title: const Text('Life Reminder 🩵'),
         backgroundColor: const Color.fromRGBO(33, 150, 243, 1),
         foregroundColor: Colors.white,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              cambiarRolAPremium(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange, // Color llamativo
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30), // Bordes redondeados
+              ),
+              elevation: 5, // Elevación para darle efecto de sombra
+            ),
+            child: const Text(
+              'Hazte Premium', // Texto claro y directo
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -194,6 +220,72 @@ class menuPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void mostrarDialogoCambioRol(BuildContext context) {
+    final TextEditingController controladorCodigoSecreto =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ingresa el código secreto'),
+        content: TextField(
+          controller: controladorCodigoSecreto,
+          decoration: const InputDecoration(labelText: 'Código Secreto'),
+          obscureText: true,
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Cancelar'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            child: const Text('Cambiar a Premium'),
+            onPressed: () async {
+              final codigoSecreto = controladorCodigoSecreto.text.trim();
+              Navigator.pop(context);
+
+              if (codigoSecreto.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Por favor ingresa un código secreto')),
+                );
+                return;
+              }
+
+              try {
+                final response = await http.put(
+                  Uri.parse('http://192.168.1.10:3000/api/CambioRoles'),
+                  headers: {'Content-Type': 'application/json'},
+                  body: jsonEncode({'codigoSecreto': codigoSecreto}),
+                );
+
+                if (response.statusCode == 200) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('¡Ahora eres usuario premium! 🎉')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'Código incorrecto o error al cambiar el rol')),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error de red: $e')),
+                );
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }

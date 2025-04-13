@@ -32,6 +32,11 @@ export const usuarioSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: false
+    },
+    rol: {
+        type: String,
+        default: 'normal',
+        enum: ['normal', 'premium']
     }
 }, {timestamps: true
 

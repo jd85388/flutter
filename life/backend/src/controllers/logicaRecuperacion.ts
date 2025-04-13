@@ -16,9 +16,10 @@ export const recuperacionCuenta = async (req: Request, res: Response) => {
 
         const token = jwt.sign({id: usuario._id}, config.jwt_codificado, {expiresIn: "30m"});
 
-        const enlace = `${config.backend_host}/api/recuperar/${token}`;
+        const enlace = `${config.fronted_recuperacion}/api/recuperar/${token}`;
         const html = `
-        <h2>Recuperacion de cuenta</h2>
+        <h1>Recuperacion de cuenta</h1>
+        <br>
         <p>Lamentamos lo ocurrido, haz click en el siguiente enlace para cambiar tu contraeña</p>
         <a href="${enlace}">${enlace}</a>
         `;

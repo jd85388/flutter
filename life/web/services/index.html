@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cambiar Contraseña - Life Reminder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #111827;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 1rem 0;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #3b82f6;
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    .message {
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Recuperar Contraseña</h1>
+    <input type="password" id="nuevaPassword" placeholder="Nueva contraseña" />
+    <button onclick="cambiarContrasena()">Cambiar Contraseña</button>
+    <div class="message" id="mensaje"></div>
+  </div>
+
+  <script>
+    async function cambiarContrasena() {
+      const password = document.getElementById('nuevaPassword').value;
+      const mensaje = document.getElementById('mensaje');
+
+      // Obtener el token de la URL
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+
+      if (!token) {
+        mensaje.textContent = "Token no encontrado en la URL.";
+        mensaje.style.color = "red";
+        return;
+      }
+
+      try {
+        const res = await fetch('https://192.168.1.10/api/recuperar/password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, nuevaPassword: password }),
+        });
+
+        const data = await res.json();
+        mensaje.textContent = data.message;
+        mensaje.style.color = res.ok ? "green" : "red";
+      } catch (err) {
+        mensaje.textContent = "Ocurrió un error. Intenta de nuevo.";
+        mensaje.style.color = "red";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

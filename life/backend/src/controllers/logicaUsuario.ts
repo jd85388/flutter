@@ -31,16 +31,19 @@ export const registre = async (req: Request, res: Response) => {
             telephone,
             email,
             age,  
-            password: hashedPassword
+            password: hashedPassword,
+            rol: 'normal'
         });
         await newUsuario.save();
+    
 
 
         await enviarCorreo(
             email,
              "Bienvenido a Life Reminder",
-            `<h2>hola ${name},</h2><p>Es un placer que hayas decidido unirte a nosotros. 
-   Puedes contactarnos a través de este correo para cualquier duda que tengas.</p>`
+            `<h2>hola ${name},</h2><br><p>Nos alegra mucho que te hayas registrado en Life Reminder
+            nosotros cuidaremos de ti, te recordaremos los tiempo exaptos para cumplir con tu citas medicas,
+            tomar tu medicamento ademas siempre te aconsejaremos lo mejor para motivarte a cuidar mas de ti</p>`
          );
 
         res.status(201).json({
@@ -82,7 +85,7 @@ export  const login = async (req: Request, res: Response) => {
             token
         });
     } catch (e) {
-        console.error("Error en login:", e); // Esto imprimirá en consola el error real
+        console.error("Error en login:", e); 
         res.status(500).json({
             message: "Perdimos la conexion con el servidor",
             error: e instanceof Error ? e.message : e
@@ -90,3 +93,4 @@ export  const login = async (req: Request, res: Response) => {
     }
     
     }
+
