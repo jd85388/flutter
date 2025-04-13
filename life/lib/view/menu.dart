@@ -7,8 +7,8 @@ import 'package:life/view/lista_citas_screen.dart';
 import 'package:life/view/lista_medicamentos_screen.dart';
 import 'package:life/view/lista_tratamientos_screen.dart';
 
-class menuPage extends StatelessWidget {
-  const menuPage({Key? key}) : super(key: key);
+class MenuPage extends StatelessWidget {
+  const MenuPage({Key? key}) : super(key: key);
 
   void navegar(BuildContext context, Widget destino) {
     Navigator.push(

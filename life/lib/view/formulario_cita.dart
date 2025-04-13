@@ -1,66 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FormularioCita extends StatefulWidget {
   const FormularioCita({Key? key}) : super(key: key);
 
   @override
-  State<FormularioCita> createState() => _FormularioCitaState();
+  _FormularioCitaState createState() => _FormularioCitaState();
 }
 
 class _FormularioCitaState extends State<FormularioCita> {
   final _formKey = GlobalKey<FormState>();
-  final _nombreController = TextEditingController();
-  final _tipoController = TextEditingController();
-  final _fechaController = TextEditingController();
-  final _horaController = TextEditingController();
-  final _descripcionController = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _fechaController = TextEditingController();
+  final TextEditingController _horaController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
+
+  DateTime? _fechaSeleccionada;
+  TimeOfDay? _horaSeleccionada;
 
   Future<void> _seleccionarFecha() async {
-    DateTime? fecha = await showDatePicker(
+    final DateTime? fecha = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2024),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2101),
     );
-
-    if (fecha != null) {
-      _fechaController.text = fecha.toIso8601String().split('T').first;
+    if (fecha != null && fecha != _fechaSeleccionada) {
+      setState(() {
+        _fechaSeleccionada = fecha;
+        _fechaController.text = DateFormat('yyyy-MM-dd').format(fecha);
+      });
     }
   }
 
   Future<void> _seleccionarHora() async {
-    TimeOfDay? hora = await showTimePicker(
+    final TimeOfDay? hora = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
-
-    if (hora != null) {
-      _horaController.text = hora.format(context);
+    if (hora != null && hora != _horaSeleccionada) {
+      setState(() {
+        _horaSeleccionada = hora;
+        _horaController.text = hora.format(context);
+      });
     }
   }
 
   void _guardarCita() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _fechaSeleccionada != null && _horaSeleccionada != null) {
+      // Aquí guardas la cita en la base de datos
       final cita = {
-        'nombre': _nombreController.text.trim(),
-        'tipoConsulta': _tipoController.text.trim(),
-        'fecha': _fechaController.text.trim(),
-        'hora': _horaController.text.trim(),
-        'descripcion': _descripcionController.text.trim(),
+        'nombre': _nombreController.text,
+        'fecha': _fechaController.text,
+        'hora': _horaController.text,
+        'descripcion': _descripcionController.text,
       };
-
-      print("Cita guardada: $cita");
-
+      print('Cita guardada: $cita');
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cita registrada exitosamente')),
+        const SnackBar(content: Text('Cita guardada exitosamente')),
       );
 
-      _formKey.currentState!.reset();
-      _nombreController.clear();
-      _tipoController.clear();
-      _fechaController.clear();
-      _horaController.clear();
-      _descripcionController.clear();
+      Navigator.pop(context);
     }
   }
 
@@ -68,94 +69,83 @@ class _FormularioCitaState extends State<FormularioCita> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nueva Cita'),
-        backgroundColor: Colors.blue,
+        title: const Text('Registrar Cita'),
+        backgroundColor: const Color.fromRGBO(33, 150, 243, 1),
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Registrar cita médica',
+                'Complete la información de la cita',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(
-                  labelText: 'Nombre del médico o especialista',
+                  labelText: 'Nombre',
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Ingrese el nombre' : null,
+                validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _tipoController,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo de consulta',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.local_hospital),
-                ),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Ingrese el tipo de consulta'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _fechaController,
-                readOnly: true,
-                onTap: _seleccionarFecha,
-                decoration: const InputDecoration(
-                  labelText: 'Fecha',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Seleccione la fecha'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _horaController,
-                readOnly: true,
-                onTap: _seleccionarHora,
-                decoration: const InputDecoration(
-                  labelText: 'Hora',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.access_time),
-                ),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Seleccione la hora'
-                    : null,
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripción',
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
                 ),
-                maxLines: 3,
+                validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
+              ),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: _seleccionarFecha,
+                child: TextFormField(
+                  controller: _fechaController,
+                  enabled: false,
+                  decoration: const InputDecoration(
+                    labelText: 'Fecha',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
+                ),
+              ),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: _seleccionarHora,
+                child: TextFormField(
+                  controller: _horaController,
+                  enabled: false,
+                  decoration: const InputDecoration(
+                    labelText: 'Hora',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value!.isEmpty ? 'Este campo es obligatorio' : null,
+                ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: _guardarCita,
-                icon: const Icon(Icons.save),
-                label: const Text('Guardar Cita'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: _guardarCita,
+                  icon: const Icon(Icons.save),
+                  label: const Text('Guardar Cita'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(33, 150, 243, 1),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
                   ),
-                  textStyle: const TextStyle(fontSize: 18),
                 ),
               ),
             ],

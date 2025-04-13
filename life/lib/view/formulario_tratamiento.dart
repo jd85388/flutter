@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class FormularioTratamiento extends StatefulWidget {
   const FormularioTratamiento({Key? key}) : super(key: key);
@@ -13,25 +15,47 @@ class _FormularioTratamientoState extends State<FormularioTratamiento> {
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _duracionController = TextEditingController();
 
-  void _guardarTratamiento() {
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _descripcionController.dispose();
+    _duracionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _guardarTratamiento() async {
     if (_formKey.currentState!.validate()) {
-      // Aquí puedes integrar la lógica para guardar en base de datos
       final tratamiento = {
         'nombre': _nombreController.text.trim(),
         'descripcion': _descripcionController.text.trim(),
         'duracion': _duracionController.text.trim(),
       };
 
-      print('Tratamiento guardado: $tratamiento');
+      try {
+        final response = await http.post(
+          Uri.parse('http://192.168.80.11:3000/api/tratamientos'), // Cambia esta URL si es necesario
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(tratamiento),
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tratamiento guardado exitosamente')),
-      );
-
-      _formKey.currentState!.reset();
-      _nombreController.clear();
-      _descripcionController.clear();
-      _duracionController.clear();
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Tratamiento guardado exitosamente')),
+          );
+          _formKey.currentState!.reset();
+          _nombreController.clear();
+          _descripcionController.clear();
+          _duracionController.clear();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al guardar el tratamiento')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error de red: $e')),
+        );
+      }
     }
   }
 
@@ -55,7 +79,6 @@ class _FormularioTratamientoState extends State<FormularioTratamiento> {
               ),
               const SizedBox(height: 20),
 
-              // Campo Nombre
               TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(
@@ -72,7 +95,6 @@ class _FormularioTratamientoState extends State<FormularioTratamiento> {
               ),
               const SizedBox(height: 16),
 
-              // Campo Descripción
               TextFormField(
                 controller: _descripcionController,
                 decoration: const InputDecoration(
@@ -90,7 +112,6 @@ class _FormularioTratamientoState extends State<FormularioTratamiento> {
               ),
               const SizedBox(height: 16),
 
-              // Campo Duración
               TextFormField(
                 controller: _duracionController,
                 decoration: const InputDecoration(
@@ -111,7 +132,6 @@ class _FormularioTratamientoState extends State<FormularioTratamiento> {
               ),
               const SizedBox(height: 30),
 
-              // Botón Guardar
               ElevatedButton.icon(
                 onPressed: _guardarTratamiento,
                 icon: const Icon(Icons.save),
